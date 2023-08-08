@@ -64,7 +64,7 @@
                                     <h3 class="text-center">Registration Form</h3>
                                 </div>
                                 <div class="card-body">
-                                    <form id="form" method="POST" action="{{route('userdataregister')}}">
+                                    <form id="form" method="POST" action="{{route('userdataregister')}}"  enctype="multipart/form-data">
                                         @csrf
                                         <div class="mb-3">
                                             <label for="name" class="form-label">Name</label>
@@ -126,6 +126,11 @@
                                                 <input type="checkbox" class="form-check-input" id="french" name="languages[]" value="French">
                                                 <label class="form-check-label" for="french">French</label>
                                             </div>
+                                        </div>
+
+                                         <div class="mb-3">
+                                            <label for="name" class="form-label">image</label>
+                                            <input type="file" class="form-control" id="image" name="image" required>
                                         </div>
                                         <div class="d-grid">
                                             <button type="submit" class="btn btn-primary">Register</button>

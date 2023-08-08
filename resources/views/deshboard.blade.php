@@ -69,6 +69,7 @@
                             <th scope="col">state</th>
                             <th scope="col">gender</th>
                             <th scope="col">language</th>
+                            <th scope="col">image</th>
 
                         </tr>
                     </thead>
@@ -85,6 +86,7 @@
                             <td>{{$users->state}}</td>
                             <td>{{$users->gender}}</td>
                             <td>{{$users->language}}</td>
+                            <td>{{$users->image}}</td>
                             <td><a href="edit/{{$users->id}}">edit <a></td>
                         </tr>
 

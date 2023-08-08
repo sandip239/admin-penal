@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\customers;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class usercontroller extends Controller
 {
@@ -18,9 +19,8 @@ class usercontroller extends Controller
     }
 
 
-    public function userRegister(request $request)
+    public function userRegister(Request $request)
     {
-
         $validatedData = $request->validate([
             'name' => 'required|string',
             'email' => 'required',
@@ -28,9 +28,14 @@ class usercontroller extends Controller
             'state' => 'required',
             'gender' => 'required',
             'languages' => 'required|array',
-
+            'image' => 'required', // Make sure the 'image' field is an image file
         ]);
+        // dd($request->image);
 
+        $file = $request->file('image');
+        $filename = time() . '_' . $file->getClientOriginalName();
+
+        $file->move(public_path('uploads'), $filename); // Move the file to the "uploads" directory in the public folder
 
         // Store the student data in the database
         $student = new customers();
@@ -40,24 +45,14 @@ class usercontroller extends Controller
         $student->state = $validatedData['state'];
         $student->gender = $validatedData['gender'];
         $student->language = json_encode($validatedData['languages']);
-
-
-
-        // Handle the profile_picture file upload
-        // if ($request->hasFile('profile_picture')) {
-        //     $file = $request->file('profile_picture');
-        //     $filename = time() . '_' . $file->getClientOriginalName();
-        //     $file->move(public_path('profile_pictures'), $filename); // Move the file to the "profile_pictures" directory in the public folder
-        //     $student->profile_picture = 'profile_pictures/' . $filename;
-        // }
+        $student->image = $filename; // Store the filename, not the file object
 
         $student->save();
-        return redirect()->route('deshboard');
-        // Redirect or return a response
-        // For example, redirect back to the registration form with a success message
-        // dd('sucess');
 
+        return redirect()->route('deshboard');
     }
+
+
 
     public function edit($id)
     {
@@ -68,6 +63,27 @@ class usercontroller extends Controller
     public function updateData(request $request)
     {
 
+        $request->validate([
+            'image' => 'nullable'
+        ]);
+
+        $student = customers::find($request->input('id'));
+
+    if ($request->hasFile('image')) {
+        $file = $request->file('image');
+
+        $filename = time() . '_' . $file->getClientOriginalName();
+
+        $file->move(public_path('uploads'), $filename);
+
+        if ($student->image) {
+            unlink(public_path('uploads/' . $student->image));
+        }
+        
+        $student->image = $filename;
+        $student->save();
+    }
+
         $student = customers::find($request->input('id'));
 
         $student->name = $request->input('name');
@@ -77,6 +93,7 @@ class usercontroller extends Controller
         $student->state = $request->input('state');
         $student->language = json_encode($request->input('languages'));
         $student->gender = $request->input('gender');
+
         $student->save();
 
         return redirect()->route('deshboard');
