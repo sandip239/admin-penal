@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\userCreated;
 use App\Models\customers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
@@ -28,9 +29,14 @@ class usercontroller extends Controller
             'state' => 'required',
             'gender' => 'required',
             'languages' => 'required|array',
-            'image' => 'required', // Make sure the 'image' field is an image file
+            'image' => 'required',
         ]);
         // dd($request->image);
+           $data = [
+        'username' => $validatedData['name'],
+        'useremail' => $validatedData['email'],
+       ];
+          event(new UserCreated($data));
 
         $file = $request->file('image');
         $filename = time() . '_' . $file->getClientOriginalName();
@@ -79,7 +85,7 @@ class usercontroller extends Controller
         if ($student->image) {
             unlink(public_path('uploads/' . $student->image));
         }
-        
+
         $student->image = $filename;
         $student->save();
     }
@@ -98,4 +104,13 @@ class usercontroller extends Controller
 
         return redirect()->route('deshboard');
     }
+
+    public function deleteUsers(Request $request)
+{
+    $userIds = $request->input('user_ids');
+    customers::whereIn('id', $userIds)->delete();
+
+    return response()->json(['message' => 'Users deleted successfully']);
+}
+
 }

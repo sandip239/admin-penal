@@ -34,3 +34,9 @@ Route::post('userregister',[usercontroller::class,'userRegister'])->name('userda
 Route::get('edit/{id}',[usercontroller::class,'edit'])->name('edit');
 Route::post('update-data',[usercontroller::class,'updateData'])->name('updateData');
 
+
+Route::post('delete-users',[usercontroller::class,'deleteUsers'])->name('delete-users');
+
+
+
+

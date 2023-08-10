@@ -60,6 +60,7 @@
                 <!-- Add your main content here -->
                 <table class="table">
                     <thead class="thead-dark">
+                        <button id="delete-selected">Delete Selected</button>
                         <tr>
                             <th scope="col">No</th>
                             <th scope="col">name</th>
@@ -73,25 +74,24 @@
 
                         </tr>
                     </thead>
-                    @foreach ($user as $users )
+                    @foreach ($user as $users)
+                        <tbody>
+                            <tr>
+                                <td><input type="checkbox" class="user-checkbox" data-user-id="{{ $users->id }}">
+                                </td>
+                                <th scope="row">{{ $users->id }}</th>
+                                <td>{{ $users->name }}</td>
+                                <td>{{ $users->email }}</td>
+                                <td>{{ $users->country }}</td>
+                                <td>{{ $users->city }}</td>
+                                <td>{{ $users->state }}</td>
+                                <td>{{ $users->gender }}</td>
+                                <td>{{ $users->language }}</td>
+                                <td>{{ $users->image }}</td>
+                                <td><a href="edit/{{ $users->id }}">edit <a></td>
+                            </tr>
 
-
-                    <tbody>
-                        <tr>
-                            <th scope="row">{{$users->id}}</th>
-                            <td>{{$users->name}}</td>
-                            <td>{{$users->email}}</td>
-                            <td>{{$users->country}}</td>
-                            <td>{{$users->city}}</td>
-                            <td>{{$users->state}}</td>
-                            <td>{{$users->gender}}</td>
-                            <td>{{$users->language}}</td>
-                            <td>{{$users->image}}</td>
-                            <td><a href="edit/{{$users->id}}">edit <a></td>
-                        </tr>
-
-                    </tbody>
-
+                        </tbody>
                     @endforeach
                 </table>
 
@@ -105,3 +105,53 @@
 </body>
 
 </html>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+<script>
+   $(document).ready(function() {
+    var selectedUserIds = []; // Initialize outside the click event
+
+    // When a checkbox is checked or unchecked
+    $('.user-checkbox').change(function() {
+        var userId = $(this).data('user-id');
+
+        if (this.checked) {
+            selectedUserIds.push(userId); // Add to array when checked
+        } else {
+            var index = selectedUserIds.indexOf(userId);
+            if (index !== -1) {
+                selectedUserIds.splice(index, 1); // Remove from array when unchecked
+            }
+        }
+
+        console.log(selectedUserIds);
+    });
+
+    $('#delete-selected').click(function() {
+        if (selectedUserIds.length === 0) {
+            alert('Please select at least one user to delete.');
+            return;
+        }
+
+        $.ajax({
+            type: 'POST',
+
+            url: '{{ route('delete-users') }}',
+
+            data: {
+                _token: '{{ csrf_token() }}',
+                user_ids: selectedUserIds
+            },
+            success: function(response) {
+                // Handle the success response, like updating the UI
+            },
+            error: function(error) {
+                console.log(error);
+                alert('An error occurred while deleting users.');
+            }
+        });
+    });
+});
+
+</script>
