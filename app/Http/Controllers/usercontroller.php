@@ -3,16 +3,25 @@
 namespace App\Http\Controllers;
 
 use App\Events\userCreated;
+use App\Mail\RegistrationConfirmationMail;
 use App\Models\customers;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Storage;
+use Yajra\DataTables\Facades\DataTables;
 
 class usercontroller extends Controller
 {
-    public function deshboard()
+    public function deshboard(request $request)
     {
-        $user = customers::all();
-        return view('deshboard', compact('user'));
+        if ($request->ajax()) {
+            $users = customers::select(['id', 'name', 'email','country','state','gender','language']);
+
+            return DataTables::of($users)->toJson();
+        }
+          return view('deshboard');
+        // $user = customers::all();
+        // return view('deshboard', compact('user'));
     }
     public function index()
     {
@@ -112,5 +121,24 @@ class usercontroller extends Controller
 
     return response()->json(['message' => 'Users deleted successfully']);
 }
+
+public function yajara(Request $request)
+{
+    if ($request->ajax()) {
+        $users = customers::select(['id', 'name', 'email']);
+
+        return DataTables::of($users)->toJson();
+    }
+
+    return view('yajara');
+}
+
+public function deleteSelected(Request $request)
+    {
+        $userIds = $request->input('user_ids');
+        customers::whereIn('id', $userIds)->delete();
+
+        return response()->json(['message' => 'Selected users deleted successfully']);
+    }
 
 }

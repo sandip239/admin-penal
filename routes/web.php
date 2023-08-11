@@ -38,5 +38,14 @@ Route::post('update-data',[usercontroller::class,'updateData'])->name('updateDat
 Route::post('delete-users',[usercontroller::class,'deleteUsers'])->name('delete-users');
 
 
+Route::get('/users',[usercontroller::class,'yajara'])->name('yajara-table');
+Route::post('delete-selected',[usercontroller::class,'deleteSelected'])->name('delete-selected');
+
+// Route::post('/delete-selected', 'UserController@deleteSelected')->name('delete-selected');
+
+
+
+
+
 
 

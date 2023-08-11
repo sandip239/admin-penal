@@ -1,0 +1,62 @@
+composer require yajra/laravel-datatables-oracle
+
+
+php artisan vendor:publish --tag=datatables
+
+
+@extends('layouts.app')
+
+@section('content')
+    <table class="table" id="users-table">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Email</th>
+                <!-- Add more columns here -->
+            </tr>
+        </thead>
+    </table>
+
+    <script>
+        $(document).ready(function() {
+            $('#users-table').DataTable({
+                processing: true,
+                serverSide: true,
+                ajax: '{{ route('users.index') }}',
+                columns: [
+                    { data: 'id', name: 'id' },
+                    { data: 'name', name: 'name' },
+                    { data: 'email', name: 'email' },
+                    // Define more columns
+                ]
+            });
+        });
+    </script>
+@endsection
+
+
+use Illuminate\Http\Request;
+use Yajra\DataTables\Facades\DataTables;
+use App\Models\User;
+
+// ...
+
+public function index(Request $request)
+{
+    if ($request->ajax()) {
+        $users = User::select(['id', 'name', 'email']);
+
+        return DataTables::of($users)->toJson();
+    }
+
+    return view('users.index');
+}
+
+
+<!-- Add these within the <head> section of your HTML document -->
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.min.css">
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<!-- Add this just before the closing </body> tag in your HTML document -->
+<script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>

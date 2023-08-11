@@ -19,6 +19,7 @@ class userCreated
      */
     public function __construct($userData)
     {
+        
         $this->userData = $userData;
     }
 
